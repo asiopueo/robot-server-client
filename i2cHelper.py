@@ -55,18 +55,18 @@ def remove_line(tfile,sstr):
 		for i in range(len(i2c_list)-1, 0, -1):
 			lines.remove(lines[i2c_list[i]])
 		open(tfile,'w').writelines(lines)
-		
-	except Exception,e:
-		print 'remove_line:', e
+	except Exception as e:
+		print('remove_line:', e)
+
 
 def add_line(tfile,sstr):
 	try:
 		lines=open(tfile,'r').readlines()
 		lines.append(sstr)
 		open(tfile,'w').writelines(lines)
-		
-	except Exception,e:
-		print 'add line:', e
+	except Exception as e:
+		print('add line:', e)
+
 
 def setting_i2c():
 	remove_line('/boot/config.txt', 'dtparam=i2c_arm=')
@@ -74,29 +74,29 @@ def setting_i2c():
 
 def main():
 	global CPU_Number
-	print ''
-	print '   ===================================='
-	print '   ||                                ||'
-	print '   ||     Raspberry Pi I2C check     ||'
-	print '   ||        and setup tools         ||'
-	print '   ||                                ||'
-	print '   ||                     SunFounder ||'
-	print '   ===================================='
-	print ''
+	print('')
+	print('   ====================================')
+	print('   ||                                ||')
+	print('   ||     Raspberry Pi I2C check     ||')
+	print('   ||        and setup tools         ||')
+	print('   ||                                ||')
+	print('   ||                     SunFounder ||')
+	print('   ====================================')
+	print('')
 	time.sleep(2)
-	print "   Checking your Pi's information."
+	print("   Checking your Pi's information.")
 	your_pi_revision = getPiRevision()
 	you_i2c_bus_number = getPiI2CBusNumber()
 	time.sleep(1)
-	print '   Your cpu revision:', CPU_Number
+	print('   Your cpu revision:', CPU_Number)
 	time.sleep(1)
-	print '   Your Raspberry Pi is Revision', your_pi_revision
+	print('   Your Raspberry Pi is Revision', your_pi_revision)
 	time.sleep(1)
-	print '   Your I2C bus number is:', you_i2c_bus_number
+	print('   Your I2C bus number is:', you_i2c_bus_number)
 	time.sleep(1)
-	print ''
+	print('')
 	time.sleep(1)
-	print '   Checking your device...'
+	print('   Checking your device...')
 	flag = False
 	device = 'i2c-' + str(you_i2c_bus_number)
 	for dev in os.listdir('/dev/'):
@@ -104,45 +104,46 @@ def main():
 			flag = True
 	time.sleep(1)
 	if flag:
-		print '   I2C setting is fine.'
+		print('   I2C setting is fine.')
 		time.sleep(1)
-		print '   Runing i2cdetect..'
+		print('   Runing i2cdetect..')
 		time.sleep(1)
-		print ''
+		print('')
 		command = 'i2cdetect -y ' + str(you_i2c_bus_number)
 		os.system(command)
 	else:
-		print '   I2C has not been setup.'
+		print('   I2C has not been setup.')
 		time.sleep(1)
-		print ''
+		print('')
 		time.sleep(1)
-		print '   Backup...',
+		print('   Backup...',)
 		os.system('cp /boot/config.txt /boot/config.bak')
-		print 'done'
+		print('done')
 		time.sleep(1)
-		print '   Setting i2c...',
+		print('   Setting i2c...')
 		setting_i2c()
-		print 'done'
+		print('done')
 		time.sleep(1)
-		print '   I2C has set. It would change after reboot.'
+		print('   I2C has set. It would change after reboot.')
 		time.sleep(1)
 		check = raw_input('   Do you want to reboot now?(y/n) ')
 		flag = True
 		while flag:
 			if check in ['y', 'Y']:
-				print '   Your Raspberry Pi will be reboot in 5 second.'
+				print('   Your Raspberry Pi will be reboot in 5 second.')
 				for i in range(6):
 					time.sleep(1)
-					print '   ', 5-i
-				print '   Rebooting...'
+					print('   ', 5-i)
+				print('   Rebooting...')
 				flag = False
 				os.system('reboot')
 			elif check in ['n', 'N']:
 				time.sleep(1)
-				print '   Done.'
+				print('   Done.')
 				flag = False
 			else:
-				print '   It should be "Y" or "N", in capital or not. Try again.'
+				print('   It should be "Y" or "N", in capital or not. Try again.')
+
 
 if __name__ == '__main__':
 	main()

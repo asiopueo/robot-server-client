@@ -4,12 +4,11 @@ import sys
 from socket import *
 from time import ctime          # Import necessary modules
 
-"""
 import RPi.GPIO as GPIO
-import video_dir
+#import video_dir
 import car_dir
 import motor
-"""
+
 
 ctrl_cmd = ['forward', 'backward', 'left', 'right', 'stop', 'read cpu_temp', 'home', 'distance', 'x+', 'x-', 'y+', 'y-', 'xy_home']
 
@@ -21,17 +20,17 @@ BUFSIZ = 1024       # Size of the buffer
 ADDR = (HOST, PORT)
 
 tcpSerSock = socket(AF_INET, SOCK_STREAM)    # Create a socket.
-tcpSerSock.settimeout(5)
+tcpSerSock.settimeout(30)
 tcpSerSock.bind(ADDR)    # Bind the IP address and port number of the server.
 tcpSerSock.listen(5)
 
-"""
-video_dir.setup(busnum=busnum)
+
+#video_dir.setup(busnum=busnum)
 car_dir.setup(busnum=busnum)
 motor.setup(busnum=busnum)     # Initialize the Raspberry Pi GPIO connected to the DC motor.
-video_dir.home_x_y()
+#video_dir.home_x_y()
 car_dir.home()
-"""
+
 
 while True:
     print('Waiting for connection...')
@@ -54,22 +53,22 @@ while True:
             break
         if data == ctrl_cmd[0]:
             print('Motor moving forward')
-            #motor.forward()
+            motor.forward()
         elif data == ctrl_cmd[1]:
             print('Received backward cmd')
-            #motor.backward()
+            motor.backward()
         elif data == ctrl_cmd[2]:
             print('Received left cmd')
-            #car_dir.turn_left()
+            car_dir.turn_left()
         elif data == ctrl_cmd[3]:
             print('Received right cmd')
-            #car_dir.turn_right()
+            car_dir.turn_right()
         elif data == ctrl_cmd[6]:
             print('Received home cmd')
-            #car_dir.home()
+            car_dir.home()
         elif data == ctrl_cmd[4]:
             print('Received stop cmd')
-            #motor.ctrl(0)
+            motor.ctrl(0)
         elif data == ctrl_cmd[5]:
             print('read cpu temp...')
             temp = cpu_temp.read()

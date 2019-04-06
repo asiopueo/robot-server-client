@@ -93,7 +93,7 @@ class PWM(object):
                         print("Error. Pi revision didn't recognize, module number: %s" % line[11:-1])
                         print('Exiting...')
                         quit()
-        except Exception, e:
+        except Exception as e:
             f.close()
             print(e)
             print('Exiting...')
@@ -130,7 +130,7 @@ class PWM(object):
             print(self._DEBUG_INFO, 'Writing value %2X to %2X' % (value, reg))
         try:
             self.bus.write_byte_data(self.address, reg, value)
-        except Exception, i:
+        except Exception as i:
             print(i)
             self._check_i2c()
 
@@ -141,7 +141,7 @@ class PWM(object):
         try:
             results = self.bus.read_byte_data(self.address, reg)
             return results
-        except Exception, i:
+        except Exception as i:
             print(i)
             self._check_i2c()
 
@@ -177,7 +177,7 @@ class PWM(object):
             print("None")
         else:
             for address in addresses:
-                print()"  0x%s" % address)
+                print("  0x%s" % address)
         if "%02X" % self.address in addresses:
             print("Wierd, I2C device is connected. Try to run the program again. If the problem's still, email the error message to service@sunfounder.com")
         else:
@@ -202,7 +202,7 @@ class PWM(object):
         prescale_value -= 1.0
         if self._DEBUG:
             print(self._DEBUG_INFO, 'Setting PWM frequency to %d Hz' % freq)
-            print(self._DEBUG_INFO, 'Estimated pre-scale: %d' % prescale_value
+            print(self._DEBUG_INFO, 'Estimated pre-scale: %d' % prescale_value)
         prescale = math.floor(prescale_value + 0.5)
         if self._DEBUG:
             print(self._DEBUG_INFO, 'Final pre-scale: %d' % prescale)

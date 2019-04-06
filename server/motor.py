@@ -87,10 +87,12 @@ def motor1(x):
 		GPIO.output(Motor1_B, GPIO.LOW)
 
 def forward():
+	setSpeed(50)
 	motor0(forward0)
 	motor1(forward1)
 
 def backward():
+	setSpeed(50)
 	motor0(backward0)
 	motor1(backward1)
 
@@ -105,6 +107,7 @@ def backwardWithSpeed(spd = 50):
 	motor1(backward1)
 
 def stop():
+	setSpeed(0)
 	for pin in pins:
 		GPIO.output(pin, GPIO.LOW)
 
@@ -139,7 +142,7 @@ def test():
 
 if __name__ == '__main__':
 	setup()
-	setSpeed(50)
+	setSpeed(25)
 	#forward()
 	#backward()
 	stop()

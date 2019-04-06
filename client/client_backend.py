@@ -5,8 +5,10 @@ import socket
 
 ctrl_cmd = ['forward', 'backward', 'left', 'right', 'stop', 'read cpu_temp', 'home', 'distance', 'x+', 'x-', 'y+', 'y-', 'xy_home']
 
+
+#HOST = '192.168.0.147'    # Server(Raspberry Pi) IP address
 HOST = 'localhost'
-HOST = '192.168.2.105'    # Server IP address
+
 PORT = 21567
 BUFSIZ = 1024             # buffer size
 ADDR = (HOST, PORT)

@@ -26,9 +26,9 @@ class Shell(cmd.Cmd):
         'Turn vehicle right'
         client_backend.right_fun()
 
-    def do_neutral(self, arg):
+    def do_stop(self, arg):
         'Stop vehicle'
-        client_backend.neutral_fun()
+        client_backend.stop_fun()
 
     def do_quit(self, arg):
         'Quit the console'
