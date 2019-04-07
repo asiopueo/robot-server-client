@@ -65,7 +65,7 @@ while True:
             motor.right()
         elif data == ctrl_cmd[4]:
             print('Received stop cmd')
-            motor.ctrl(0)
+            motor.stop()
         elif data == ctrl_cmd[5]:
             print('read cpu temp...')
             temp = cpu_temp.read()
