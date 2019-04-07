@@ -39,13 +39,6 @@ def right_fun():
 	print("right")
 	tcpCliSock.send(b'right')
 
-def stop_fun():
-	print("stop")
-	tcpCliSock.send(b'stop')
-
-def neutral_fun():
-	print("home")
-	tcpCliSock.send(b'home')
 
 
 #####################
