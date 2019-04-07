@@ -47,23 +47,23 @@ def stop_fun():
 #####################
 #	Camera commands
 #####################
-def x_increase(event):
+def x_increase():
 	print("x+")
 	tcpCliSock.send(b'x+')
 
-def x_decrease(event):
+def x_decrease():
 	print("x-")
 	tcpCliSock.send(b'x-')
 
-def y_increase(event):
+def y_increase():
 	print("y+")
 	tcpCliSock.send(b'y+')
 
-def y_decrease(event):
+def y_decrease():
 	print("y-")
 	tcpCliSock.send(b'y-')
 
-def xy_home(event):
+def xy_home():
 	print("xy_home")
 	tcpCliSock.send(b'xy_home')
 
