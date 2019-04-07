@@ -67,7 +67,7 @@ def loop():
 		print('...connected from :', addr)     # Print the IP address of the client connected with the server.
 
 		while True:
-			data = tcpCliSock.recv(BUFSIZ)    # Receive data sent from the client. 
+			data = tcpCliSock.recv(BUFSIZ).decode()    # Receive data sent from the client. 
 			# Analyze the command received and control the car accordingly.
 			if not data:
 				break
