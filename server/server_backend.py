@@ -59,10 +59,10 @@ while True:
             motor.backward()
         elif data == ctrl_cmd[2]:
             print('Received left cmd')
-            car_dir.turn_left()
+            motor.left()
         elif data == ctrl_cmd[3]:
             print('Received right cmd')
-            car_dir.turn_right()
+            motor.right()
         elif data == ctrl_cmd[6]:
             print('Received home cmd')
             car_dir.home()
