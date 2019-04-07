@@ -63,9 +63,6 @@ while True:
         elif data == ctrl_cmd[3]:
             print('Received right cmd')
             motor.right()
-        elif data == ctrl_cmd[6]:
-            print('Received home cmd')
-            car_dir.home()
         elif data == ctrl_cmd[4]:
             print('Received stop cmd')
             motor.ctrl(0)
