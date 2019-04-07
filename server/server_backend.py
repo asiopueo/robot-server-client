@@ -25,7 +25,7 @@ tcpSerSock.bind(ADDR)    # Bind the IP address and port number of the server.
 tcpSerSock.listen(5)
 
 
-#video_dir.setup(busnum=busnum)
+pantilt.setup(busnum=busnum)
 car_dir.setup(busnum=busnum)
 motor.setup(busnum=busnum)     # Initialize the Raspberry Pi GPIO connected to the DC motor.
 pantilt.home_x_y()
