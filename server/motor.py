@@ -7,10 +7,9 @@ import time    # Import necessary modules
 # Raspberry Pi pin11, 12, 13 and 15 to realize the clockwise/counterclockwise
 # rotation and forward and backward movements
 # ===========================================================================
-Motor0_A = 11  # pin11
-Motor0_B = 12  # pin12
-Motor1_A = 13  # pin13
-Motor1_B = 15  # pin15
+Motor0 = 11  # pin11
+Motor1 = 13  # pin13
+
 
 # ===========================================================================
 # Set channel 4 and 5 of the servo driver IC to generate PWM, thus
@@ -19,7 +18,7 @@ Motor1_B = 15  # pin15
 EN_M0    = 4  # servo driver IC CH4
 EN_M1    = 5  # servo driver IC CH5
 
-pins = [Motor0_A, Motor0_B, Motor1_A, Motor1_B]
+pins = [Motor0, Motor1]
 
 # ===========================================================================
 # Adjust the duty cycle of the square waves output from channel 4 and 5 of
@@ -70,30 +69,36 @@ def setup(busnum=None):
 
 def motor0(x):
 	if x == 'True':
-		GPIO.output(Motor0_A, GPIO.LOW)
-		GPIO.output(Motor0_B, GPIO.HIGH)
+		GPIO.output(Motor0, GPIO.LOW)
 	elif x == 'False':
-		GPIO.output(Motor0_A, GPIO.HIGH)
-		GPIO.output(Motor0_B, GPIO.LOW)
+		GPIO.output(Motor0, GPIO.HIGH)
 	else:
 		print('Config Error')
 
 def motor1(x):
 	if x == 'True':
-		GPIO.output(Motor1_A, GPIO.LOW)
-		GPIO.output(Motor1_B, GPIO.HIGH)
+		GPIO.output(Motor1, GPIO.LOW)
 	elif x == 'False':
-		GPIO.output(Motor1_A, GPIO.HIGH)
-		GPIO.output(Motor1_B, GPIO.LOW)
+		GPIO.output(Motor1, GPIO.HIGH)
 
 def forward():
-	setSpeed(50)
+	setSpeed(25)
 	motor0(forward0)
 	motor1(forward1)
 
 def backward():
-	setSpeed(50)
+	setSpeed(25)
 	motor0(backward0)
+	motor1(backward1)
+
+def left():
+	setSpeed(25)
+	motor0(backward0)
+	motor1(forward1)
+
+def right():
+	setSpeed(25)
+	motor0(forward0)
 	motor1(backward1)
 
 def forwardWithSpeed(spd = 50):
