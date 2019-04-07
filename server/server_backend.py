@@ -28,7 +28,7 @@ tcpSerSock.listen(5)
 #video_dir.setup(busnum=busnum)
 car_dir.setup(busnum=busnum)
 motor.setup(busnum=busnum)     # Initialize the Raspberry Pi GPIO connected to the DC motor.
-#video_dir.home_x_y()
+pantilt.home_x_y()
 car_dir.home()
 
 
