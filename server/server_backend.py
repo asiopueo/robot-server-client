@@ -5,7 +5,7 @@ from socket import *
 from time import ctime          # Import necessary modules
 
 import RPi.GPIO as GPIO
-#import video_dir
+import pantilt
 import car_dir
 import motor
 
@@ -72,19 +72,19 @@ while True:
             tcpCliSock.send('[%s] %0.2f' % (ctime(), temp))
         elif data == ctrl_cmd[8]:
             print('Received x+ cmd')
-            #video_dir.move_increase_x()
+            pantilt.move_increase_x()
         elif data == ctrl_cmd[9]:
             print('Received x- cmd')
-            #video_dir.move_decrease_x()
+            pantilt.move_decrease_x()
         elif data == ctrl_cmd[10]:
             print('Received y+ cmd')
-            #video_dir.move_increase_y()
+            pantilt.move_increase_y()
         elif data == ctrl_cmd[11]:
             print('Received y- cmd')
-            #video_dir.move_decrease_y()
+            pantilt.move_decrease_y()
         elif data == ctrl_cmd[12]:
             print('home_x_y')
-            #video_dir.home_x_y()
+            pantilt.home_x_y()
         elif data[0:5] == 'speed':     # Change the speed
             print(data)
             numLen = len(data) - len('speed')
