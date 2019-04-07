@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import RPi.GPIO as GPIO
-#import video_dir
+import pantilt
 import car_dir
 import motor
 from socket import *
@@ -44,11 +44,11 @@ def setup():
 				print('turning1 =', forward1)
 	except:
 		print('no config file, set config to original')
-	#video_dir.setup(busnum=busnum)
-	car_dir.setup(busnum=busnum)
+	pantilt.setup(busnum=busnum)
+	#car_dir.setup(busnum=busnum)
 	motor.setup(busnum=busnum) 
-	#video_dir.calibrate(offset_x, offset_y)
-	car_dir.calibrate(offset)
+	pantilt.calibrate(offset_x, offset_y)
+	#car_dir.calibrate(offset)
 
 def REVERSE(x):
 	if x == 'True':
@@ -111,14 +111,14 @@ def loop():
 			#--------------------------------
 
 			#----------Mount calibration---------
-			#elif data[0:8] == 'offsetx=':
-			#	offset_x = int(data[8:])
-			#	print('Mount offset x', offset_x)
-			#	video_dir.calibrate(offset_x, offset_y)
-			#elif data[0:8] == 'offsety=':
-			#	offset_y = int(data[8:])
-			#	print('Mount offset y', offset_y)
-			#	video_dir.calibrate(offset_x, offset_y)
+			elif data[0:8] == 'offsetx=':
+				offset_x = int(data[8:])
+				print('Mount offset x', offset_x)
+				pantilt.calibrate(offset_x, offset_y)
+			elif data[0:8] == 'offsety=':
+				offset_y = int(data[8:])
+				print('Mount offset y', offset_y)
+				pantilt.calibrate(offset_x, offset_y)
 			#----------------------------------------
 
 			#-------Turing calibration 2------
@@ -133,22 +133,22 @@ def loop():
 			#--------------------------------
 
 			#----------Mount calibration 2--------
-			#elif data[0:8] == 'offsetx+':
-			#	offset_x = offset_x + int(data[8:])
-			#	print('Mount offset x', offset_x)
-			#	video_dir.calibrate(offset_x, offset_y)
-			#elif data[0:8] == 'offsetx-':
-			#	offset_x = offset_x - int(data[8:])
-			#	print('Mount offset x', offset_x)
-			#	video_dir.calibrate(offset_x, offset_y)
-			#elif data[0:8] == 'offsety+':
-			#	offset_y = offset_y + int(data[8:])
-			#	print('Mount offset y', offset_y)
-			#	video_dir.calibrate(offset_x, offset_y)
-			#elif data[0:8] == 'offsety-':
-			#	offset_y = offset_y - int(data[8:])
-			#	print('Mount offset y', offset_y)
-			#	video_dir.calibrate(offset_x, offset_y)
+			elif data[0:8] == 'offsetx+':
+				offset_x = offset_x + int(data[8:])
+				print('Mount offset x', offset_x)
+				pantilt.calibrate(offset_x, offset_y)
+			elif data[0:8] == 'offsetx-':
+				offset_x = offset_x - int(data[8:])
+				print('Mount offset x', offset_x)
+				pantilt.calibrate(offset_x, offset_y)
+			elif data[0:8] == 'offsety+':
+				offset_y = offset_y + int(data[8:])
+				print('Mount offset y', offset_y)
+				pantilt.calibrate(offset_x, offset_y)
+			elif data[0:8] == 'offsety-':
+				offset_y = offset_y - int(data[8:])
+				print('Mount offset y', offset_y)
+				pantilt.calibrate(offset_x, offset_y)
 			#----------------------------------------
 
 			#----------Confirm--------------------
