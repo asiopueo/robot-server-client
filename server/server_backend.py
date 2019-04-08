@@ -70,7 +70,7 @@ while True:
                 sleep(duration)
                 motor.stop()
             except:
-                print('Error speed =', duration)
+                print('Error duration =', duration)
 
         elif data == ctrl_cmd[1]:
             print('Received backward cmd')
@@ -112,7 +112,7 @@ while True:
                 sleep(duration)
                 motor.stop()
             except:
-                print('Error: angle =', duration)
+                print('Error: duration =', duration)
 
 
         elif data == ctrl_cmd[4]:
@@ -132,15 +132,51 @@ while True:
         elif data == ctrl_cmd[8]:
             print('Received x+ cmd')
             pantilt.move_increase_x()
+        elif data[0:3] == 'x+=':
+            print('data =', data)
+            angle = data[3:]
+            try:
+                angle = int(angle)
+                pantilt.move_increase_x()
+            except:
+                print('Error angle =', angle)
+
         elif data == ctrl_cmd[9]:
             print('Received x- cmd')
             pantilt.move_decrease_x()
+        elif data[0:3] == 'x-=':
+            print('angle =', angle)
+            angle = data[3:]
+            try:
+                angle = int(angle)
+                pantilt.move_decrease_x()
+            except:
+                print('Error angle =', angle)
+
         elif data == ctrl_cmd[10]:
             print('Received y+ cmd')
             pantilt.move_increase_y()
+        elif data[0:3] == 'y+=':
+            print('data =', data)
+            duration = data[3:]
+            try:
+                angle = int(angle)
+                pantilt.move_increase_y()
+            except:
+                print('Error angle =', angle)
+
         elif data == ctrl_cmd[11]:
             print('Received y- cmd')
             pantilt.move_decrease_y()
+        elif data[0:3] == 'y-=':
+            print('data =', data)
+            angle = data[3:]
+            try:
+                angle = int(angle)
+                pantilt.move_decrease_y()
+            except:
+                print('Error angle =', angle)
+
         elif data == ctrl_cmd[12]:
             print('home_x_y')
             pantilt.home_x_y()
