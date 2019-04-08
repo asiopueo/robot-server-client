@@ -22,8 +22,8 @@ except:
 ######################
 #	Vehicle commands
 ######################
-DEFAULT_TIME=3000 # 3000 milliseconds
-
+DEFAULT_TIME=3 # 3000 seconds
+DEFAULT_ANGLE=20 # 20 degrees
 
 #def forward_fun(event):
 def forward_fun(arg=DEFAULT_TIME):
@@ -54,21 +54,25 @@ def stop_fun():
 #####################
 #	Camera commands
 #####################
-def x_increase():
-	print("x+")
-	tcpCliSock.send(b'x+')
+def x_increase(arg=DEFAULT_ANGLE):
+	data = "x+={}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
-def x_decrease():
-	print("x-")
-	tcpCliSock.send(b'x-')
+def x_decrease(arg=DEFAULT_ANGLE):
+	data = "x-={}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
-def y_increase():
-	print("y+")
-	tcpCliSock.send(b'y+')
+def y_increase(arg=DEFAULT_ANGLE):
+	data = "y+={}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
-def y_decrease():
-	print("y-")
-	tcpCliSock.send(b'y-')
+def y_decrease(arg=DEFAULT_ANGLE):
+	data = "y-={}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
 def xy_home():
 	print("xy_home")

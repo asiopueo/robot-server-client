@@ -40,19 +40,19 @@ class Shell(cmd.Cmd):
 
     def do_cam_left(self, arg):
         'Move camera left'
-        client_backend.x_increase()
+        client_backend.x_increase(*parse(arg))
 
     def do_cam_right(self, arg):
         'Move camera right'
-        client_backend.x_decrease()
+        client_backend.x_decrease(*parse(arg))
 
     def do_cam_up(self, arg):
         'Move camera up'
-        client_backend.y_increase()
+        client_backend.y_increase(*parse(arg))
 
     def do_cam_down(self, arg):
         'Move camera down'
-        client_backend.y_decrease()
+        client_backend.y_decrease(*parse(arg))
 
     def do_cam_center(self, arg):
         'Move camera back to center'
