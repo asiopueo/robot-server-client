@@ -15,19 +15,19 @@ class Shell(cmd.Cmd):
     ###################
     def do_forward(self, arg):
         'Move vehicle forward'
-        client_backend.forward_fun()
+        client_backend.forward_fun(*parse(arg))
 
     def do_backward(self, arg):
         'Move vehicle backward'
-        client_backend.backward_fun()
+        client_backend.backward_fun(*parse(arg))
 
     def do_left(self, arg):
         'Turn vehicle left'
-        client_backend.left_fun()
+        client_backend.left_fun(*parse(arg))
 
     def do_right(self, arg):
         'Turn vehicle right'
-        client_backend.right_fun()
+        client_backend.right_fun(*parse(arg))
 
     def do_stop(self, arg):
         'Stop vehicle'
