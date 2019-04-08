@@ -53,74 +53,62 @@ while True:
         if not data:
             break
 
+        try:
+            command, arg = data.split('=')
+        except:
+            command = data
 
         ####################
         # Locomotion control
         ####################
 
-        if data == ctrl_cmd[0]:
+        if command == ctrl_cmd[0]:
             print('Motor moving forward')
-            motor.forward()
-        elif data[0:8] == 'forward=':
-            print('data =', data)
-            duration = data[8:]
-            try:
-                duration = int(duration)
+            if arg:
+                duration = int(arg)
                 motor.forward()
                 sleep(duration)
                 motor.stop()
-            except:
-                print('Error duration =', duration)
+            else:
+                motor.forward()
 
-        elif data == ctrl_cmd[1]:
-            print('Received backward cmd')
-            motor.backward()
-        elif data[0:9] == 'backward=':
-            print("data =", data)
-            duration = data.split('=')[1]
-            try:
-                duration = int(duration)
+        elif command == ctrl_cmd[1]:
+            print('Motor moving backward')
+            if arg:
+                duration = int(arg)
                 motor.backward()
                 sleep(duration)
                 motor.stop()
-            except:
-                print('ERROR, duration =', duration)
+            else:
+                motor.backward()
 
-        elif data == ctrl_cmd[2]:
-            print('Received left cmd')
-            motor.left()
-        elif data[0:5] == 'left=':    #Turning Angle
-            print('data =', data)
-            duration = data.split('=')[1]
-            try:
-                duration = int(duration)
+        elif command == ctrl_cmd[2]:
+            print('Motor moving left')
+            if arg:
+                duration = int(arg)
                 motor.left()
                 sleep(duration)
                 motor.stop()
-            except:
-                print('Error: duration =', duration)
+            else:
+                motor.left()
 
-        elif data == ctrl_cmd[3]:
-            print('Received right cmd')
-            motor.right()
-        elif data[0:6] == 'right=':
-            print('data =', data)
-            duration = data.split('=')[1]
-            try:
-                duration = int(duration)
+        elif command == ctrl_cmd[3]:
+            print('Motor moving right')
+            if arg:
+                duration = int(arg)
                 motor.right()
                 sleep(duration)
                 motor.stop()
-            except:
-                print('Error: duration =', duration)
+            else:
+                motor.right()
 
 
-        elif data == ctrl_cmd[4]:
+        elif command == ctrl_cmd[4]:
             print('Received stop cmd')
             motor.stop()
 
 
-        elif data == ctrl_cmd[5]:
+        elif command == ctrl_cmd[5]:
             print('read cpu temp...')
             temp = cpu_temp.read()
             tcpCliSock.send('[%s] %0.2f' % (ctime(), temp))
@@ -129,55 +117,35 @@ while True:
         ####################
         # Pan/tilt-control
         ####################
-        elif data == ctrl_cmd[8]:
+        elif command == ctrl_cmd[8]:
             print('Received x+ cmd')
-            pantilt.move_increase_x()
-        elif data[0:3] == 'x+=':
-            print('data =', data)
-            angle = data[3:]
             try:
-                angle = int(angle)
                 pantilt.move_increase_x()
             except:
-                print('Error angle =', angle)
+                print('Error angle =', arg)
 
-        elif data == ctrl_cmd[9]:
+        elif command == ctrl_cmd[9]:
             print('Received x- cmd')
-            pantilt.move_decrease_x()
-        elif data[0:3] == 'x-=':
-            print('angle =', angle)
-            angle = data[3:]
             try:
-                angle = int(angle)
                 pantilt.move_decrease_x()
             except:
-                print('Error angle =', angle)
+                print('Error angle =', arg)
 
-        elif data == ctrl_cmd[10]:
+        elif command == ctrl_cmd[10]:
             print('Received y+ cmd')
-            pantilt.move_increase_y()
-        elif data[0:3] == 'y+=':
-            print('data =', data)
-            duration = data[3:]
             try:
-                angle = int(angle)
                 pantilt.move_increase_y()
             except:
-                print('Error angle =', angle)
+                print('Error angle =', arg)
 
-        elif data == ctrl_cmd[11]:
+        elif command == ctrl_cmd[11]:
             print('Received y- cmd')
-            pantilt.move_decrease_y()
-        elif data[0:3] == 'y-=':
-            print('data =', data)
-            angle = data[3:]
             try:
-                angle = int(angle)
                 pantilt.move_decrease_y()
             except:
-                print('Error angle =', angle)
+                print('Error angle =', arg)
 
-        elif data == ctrl_cmd[12]:
+        elif command == ctrl_cmd[12]:
             print('home_x_y')
             pantilt.home_x_y()
         else:

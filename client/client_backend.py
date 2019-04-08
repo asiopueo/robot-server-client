@@ -27,22 +27,22 @@ DEFAULT_TIME=3000 # 3000 milliseconds
 
 #def forward_fun(event):
 def forward_fun(arg=DEFAULT_TIME):
-	data = "forward {}".format(arg)
+	data = "forward={}".format(arg)
 	print(data)
 	tcpCliSock.send(data.encode())
 
 def backward_fun(arg=DEFAULT_TIME):
-	data = "backward {}".format(arg)
+	data = "backward={}".format(arg)
 	print(data)
 	tcpCliSock.send(data.encode())
 
 def left_fun(arg=DEFAULT_TIME):
-	data = "left {}".format(arg)
+	data = "left={}".format(arg)
 	print(data)
 	tcpCliSock.send(data.encode())
 
 def right_fun(arg=DEFAULT_TIME):
-	data = "right {}".format(arg)
+	data = "right={}".format(arg)
 	print(data)
 	tcpCliSock.send(data.encode())
 
