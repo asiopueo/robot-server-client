@@ -92,12 +92,12 @@ def backward():
 	motor1(backward1)
 
 def left():
-	setSpeed(25)
+	setSpeed(65)
 	motor0(backward0)
 	motor1(forward1)
 
 def right():
-	setSpeed(25)
+	setSpeed(65)
 	motor0(forward0)
 	motor1(backward1)
 
