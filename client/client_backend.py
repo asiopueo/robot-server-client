@@ -22,22 +22,29 @@ except:
 ######################
 #	Vehicle commands
 ######################
+DEFAULT_TIME=3000 # 3000 milliseconds
+
+
 #def forward_fun(event):
-def forward_fun():
-	print("forward")
-	tcpCliSock.send('forward'.encode())
+def forward_fun(arg=DEFAULT_TIME):
+	data = "forward {}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
-def backward_fun():
-	print("backward")
-	tcpCliSock.send(b'backward')
+def backward_fun(arg=DEFAULT_TIME):
+	data = "backward {}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
-def left_fun():
-	print('left')
-	tcpCliSock.send(b'left')
+def left_fun(arg=DEFAULT_TIME):
+	data = "left {}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
-def right_fun():
-	print("right")
-	tcpCliSock.send(b'right')
+def right_fun(arg=DEFAULT_TIME):
+	data = "right {}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
 
 def stop_fun():
 	print('stop')
