@@ -11,7 +11,8 @@
 **********************************************************************
 '''
 
-import smbus
+#import smbus
+import fake_rpi.smbus as smbus
 import time
 import math
 

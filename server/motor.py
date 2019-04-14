@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+#from RPiSim import GPIO
+from fake_rpi.RPi import GPIO
 import PCA9685 as p
 import time    # Import necessary modules
 
