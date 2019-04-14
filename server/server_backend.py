@@ -61,7 +61,7 @@ def getCommand(data):
         return command, arg
     elif command == ctrl_cmd[4]:
         print('Received stop cmd')
-        return command, arg
+        return command, 0   # Returns 0 to set the timer of the motor state machine to zero seconds
 
 
     # CPU readouts
@@ -140,7 +140,7 @@ def getCommand(data):
 
 class MotorStateMachine:
     def __init__(self):
-        self.state = 'HALT'
+        self.state = 'stop'
         self.last_time = time()
         self.timer = 0.
 
@@ -157,13 +157,13 @@ class MotorStateMachine:
             motor.left()
         elif self.state == 'right':
             motor.right()
-        elif self.state == 'halt':
+        elif self.state == 'stop':
+            self.timer = 0.
             motor.stop()
 
 
     def step(self):
         print(self.timer)
-
         current_time = time()
         self.timer -= current_time - self.last_time
         self.last_time = current_time
@@ -230,7 +230,6 @@ if __name__=='__main__':
 
         # Main loop
         while True:
-            data = ''
             try:
                 data = tcpCliSock.recv(BUFSIZ).decode()
                 # Analyze the command received and control the car accordingly.
