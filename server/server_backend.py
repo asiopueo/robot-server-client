@@ -41,27 +41,24 @@ car_dir.home()
 # States for the drive motors
 states = ['HALT', 'LEFT', 'RIGHT', 'FORWARD', 'BACKWARD']
 # Default state for the drive motor
-motor_state = 'HALT'
-mount_state = 'home_x_y'
+
 
 def getCommand(data):
-    global motor_state
-    global mount_state
     # Motor commands
     if data == ctrl_cmd[0]:
-        motor_state = 'FORWARD'
+        return 'FORWARD'
         print('Motor moving forward')
     elif data == ctrl_cmd[1]:
-        motor_state = 'BACKWARD'
+        return 'BACKWARD'
         print('Received backward cmd')
     elif data == ctrl_cmd[2]:
-        motor_state = 'LEFT'
+        return 'LEFT'
         print('Received left cmd')
     elif data == ctrl_cmd[3]:
-        motor_state = 'RIGHT'
+        return 'RIGHT'
         print('Received right cmd')
     elif data == ctrl_cmd[4]:
-        motor_state = 'HALT'
+        return 'HALT'
         print('Received stop cmd')
 
     # CPU readouts
@@ -73,19 +70,19 @@ def getCommand(data):
     # Camera mount
     elif data == ctrl_cmd[8]:
         print('Received x+ cmd')
-        mount_state = ctrl_cmd[8]
+        return ctrl_cmd[8]
     elif data == ctrl_cmd[9]:
         print('Received x- cmd')
-        mount_state = ctrl_cmd[9]
+        return ctrl_cmd[9]
     elif data == ctrl_cmd[10]:
         print('Received y+ cmd')
-        mount_state = ctrl_cmd[10]
+        return ctrl_cmd[10]
     elif data == ctrl_cmd[11]:
         print('Received y- cmd')
-        mount_state = ctrl_cmd[11]
+        return ctrl_cmd[11]
     elif data == ctrl_cmd[12]:
         print('Received home_x_y cmd')
-        mount_state = ctrl_cmd[12]
+        return ctrl_cmd[12]
 
     # Change speed
     elif data[0:5] == 'speed':
@@ -132,32 +129,54 @@ def getCommand(data):
 
 
 
-def process_motor_state():
-    if motor_state == 'FORWARD':
-        motor.forward()
-    elif motor_state == 'BACKWARD':
-        motor.backward()
-    elif motor_state == 'LEFT':
-        motor.left()
-    elif motor_state == 'RIGHT':
-        motor.right()
-    elif motor_state == 'HALT':
-        motor.stop()
+class MotorStateMachine:
+    def __init__(self):
+        self.state = 'HALT'
 
-def process_mount_state():
-    if mount_state == ctrl_cmd[8]:
-        pantilt.move_increase_x()
-    elif mount_state == ctrl_cmd[9]:
-        pantilt.move_decrease_x()
-    elif mount_state == ctrl_cmd[10]:
-        pantilt.move_increase_y()
-    elif mount_state == ctrl_cmd[11]:
-        pantilt.move_decrease_y()
-    elif mount_state == ctrl_cmd[12]:
-        pantilt.home_x_y()
+    def set_state(self, new_state):
+        self.state = new_state
+
+    def run(self):
+        if self.state == 'FORWARD':
+            motor.forward()
+        elif self.state == 'BACKWARD':
+            motor.backward()
+        elif self.state == 'LEFT':
+            motor.left()
+        elif self.state == 'RIGHT':
+            motor.right()
+        elif self.state == 'HALT':
+            motor.stop()
+
+
+
+class MountStateMachine:
+    def __init__(self):
+        self.state = 'home_x_y'
+
+    def set_state(self, new_state):
+        self.state = new_state
+
+    def run(self):
+        if self.state == ctrl_cmd[8]:
+            pantilt.move_increase_x()
+        elif self.state == ctrl_cmd[9]:
+            pantilt.move_decrease_x()
+        elif self.state == ctrl_cmd[10]:
+            pantilt.move_increase_y()
+        elif self.state == ctrl_cmd[11]:
+            pantilt.move_decrease_y()
+        elif self.state == ctrl_cmd[12]:
+            pantilt.home_x_y()
+
+
 
 
 if __name__=='__main__':
+    # Initializing state machines:
+    motor_sm = MotorStateMachine()
+    mount_sm = MountStateMachine()
+
     while True:
         print('Waiting for connection...')
         # Waiting for connection. Once receiving a connection, the function accept() returns a separate
@@ -179,10 +198,13 @@ if __name__=='__main__':
             if not data:
                 break
 
-            getCommand(data)
+            state = getCommand(data)
 
-            process_motor_state()
-            process_mount_state()
+            motor_sm.set_state(state)
+            motor_sm.run()
+
+            #mount_sm.set_state(state)
+            #mount_sm.run()
 
 
 tcpSerSock.close()
