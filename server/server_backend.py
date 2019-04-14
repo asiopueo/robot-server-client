@@ -3,6 +3,7 @@
 import sys
 from socket import *
 from time import ctime, sleep
+from time import time as time
 
 import fake_rpi.RPi
 sys.modules['RPi'] = fake_rpi.RPi     # Mock RPi (GPIO)
@@ -26,7 +27,7 @@ BUFSIZ = 1024       # Size of the buffer
 ADDR = (HOST, PORT)
 
 tcpSerSock = socket(AF_INET, SOCK_STREAM)    # Create a socket.
-tcpSerSock.settimeout(30)
+tcpSerSock.settimeout(10)
 tcpSerSock.bind(ADDR)    # Bind the IP address and port number of the server.
 tcpSerSock.listen(5)
 
@@ -43,7 +44,7 @@ def getCommand(data):
     try:
         command, arg = data.split('=')
     except:
-        command = data, arg = None
+        command = data
 
     # Motor commands
     if command == ctrl_cmd[0]:
@@ -140,49 +141,40 @@ def getCommand(data):
 class MotorStateMachine:
     def __init__(self):
         self.state = 'HALT'
+        self.last_time = time()
+        self.timer = 0.
 
-    def set_state(self, new_state, arg=None):
+    def set_state(self, new_state, arg=0.):
         self.state = new_state
-        self.parameter = arg
-        self.timer = 0
+        self.timer = float(arg)
+        #self.parameter = arg
 
-    def run(self):
         if self.state == 'forward':
-            if self.parameter:
-                duration = int(self.parameter)
-                self.timer += duration
-                motor.forward()
-                sleep(duration)
-                motor.stop()
-            else:
-                motor.forward()
+            motor.forward()
         elif self.state == 'backward':
-            if self.parameter:
-                duration = int(self.parameter)
-                motor.backward()
-                sleep(duration)
-                motor.stop()
+            motor.backward()
         elif self.state == 'left':
-            if self.parameter:
-                duration = int(self.parameter)
-                motor.left()
-                sleep(duration)
-                motor.stop()
-            else:
-                motor.left()
+            motor.left()
         elif self.state == 'right':
-            if self.parameter:
-                duration = int(self.parameter)
-                motor.right()
-                sleep(duration)
-                motor.stop()
-            else:
-                motor.right()
+            motor.right()
         elif self.state == 'halt':
             motor.stop()
 
 
+    def step(self):
+        print(self.timer)
 
+        current_time = time()
+        self.timer -= current_time - self.last_time
+        self.last_time = current_time
+
+        if self.timer <= 0:
+            motor.stop()
+
+
+
+
+# Deprecated
 class MountStateMachine:
     def __init__(self):
         self.state = 'home_x_y'
@@ -190,7 +182,7 @@ class MountStateMachine:
     def set_state(self, new_state):
         self.state = new_state
 
-    def run(self):
+    def step(self):
         if self.state == ctrl_cmd[8]:
             if self.parameter:
                 pantilt.move_increase_x(self.parameter)
@@ -229,6 +221,7 @@ if __name__=='__main__':
         # one, which means it is suspended before the connection comes.
         try:
             tcpCliSock, addr = tcpSerSock.accept()
+            tcpCliSock.setblocking(0)   # Set socket to non-blocking; alternatively create new thread
         except:
             print("TCP-server timed out - no connection established.")
             sys.exit()
@@ -238,18 +231,18 @@ if __name__=='__main__':
         # Main loop
         while True:
             data = ''
-            data = tcpCliSock.recv(BUFSIZ).decode()    # Receive and decode data sent from the client.
-            if not data:
-                break
+            try:
+                data = tcpCliSock.recv(BUFSIZ).decode()
+                # Analyze the command received and control the car accordingly.
+                command, arg = getCommand(data)
+                motor_sm.set_state(command, arg)
+            except:
+                motor_sm.step()
 
-            # Analyze the command received and control the car accordingly.
-            command, arg = getCommand(data)
 
-            motor_sm.set_state(command, arg)
-            motor_sm.run()
 
+            #motor_sm.set_state(command, arg)
             #mount_sm.set_state(state)
-            #mount_sm.run()
 
 
 
