@@ -2,7 +2,7 @@
 
 import sys
 from socket import *
-from time import ctime          # Import necessary modules
+from time import ctime, sleep
 
 import fake_rpi.RPi
 sys.modules['RPi'] = fake_rpi.RPi     # Mock RPi (GPIO)
@@ -38,28 +38,30 @@ pantilt.home_x_y()
 car_dir.home()
 
 
-# States for the drive motors
-states = ['HALT', 'LEFT', 'RIGHT', 'FORWARD', 'BACKWARD']
-# Default state for the drive motor
-
 
 def getCommand(data):
+    try:
+        command, arg = data.split('=')
+    except:
+        command = data, arg = None
+
     # Motor commands
-    if data == ctrl_cmd[0]:
-        return 'FORWARD'
-        print('Motor moving forward')
-    elif data == ctrl_cmd[1]:
-        return 'BACKWARD'
+    if command == ctrl_cmd[0]:
+        print('Received forward cmd')
+        return command, arg
+    elif command == ctrl_cmd[1]:
         print('Received backward cmd')
-    elif data == ctrl_cmd[2]:
-        return 'LEFT'
+        return command, arg
+    elif command == ctrl_cmd[2]:
         print('Received left cmd')
-    elif data == ctrl_cmd[3]:
-        return 'RIGHT'
+        return command, arg
+    elif command == ctrl_cmd[3]:
         print('Received right cmd')
-    elif data == ctrl_cmd[4]:
-        return 'HALT'
+        return command, arg
+    elif command == ctrl_cmd[4]:
         print('Received stop cmd')
+        return command, arg
+
 
     # CPU readouts
     elif data == ctrl_cmd[5]:
@@ -67,22 +69,23 @@ def getCommand(data):
         temp = cpu_temp.read()
         tcpCliSock.send('[%s] %0.2f' % (ctime(), temp))
 
+
     # Camera mount
-    elif data == ctrl_cmd[8]:
+    elif command == ctrl_cmd[8]:
         print('Received x+ cmd')
-        return ctrl_cmd[8]
-    elif data == ctrl_cmd[9]:
+        return command, arg
+    elif command == ctrl_cmd[9]:
         print('Received x- cmd')
-        return ctrl_cmd[9]
-    elif data == ctrl_cmd[10]:
+        return command, arg
+    elif command == ctrl_cmd[10]:
         print('Received y+ cmd')
-        return ctrl_cmd[10]
-    elif data == ctrl_cmd[11]:
+        return command, arg
+    elif command == ctrl_cmd[11]:
         print('Received y- cmd')
-        return ctrl_cmd[11]
-    elif data == ctrl_cmd[12]:
+        return command, arg
+    elif command == ctrl_cmd[12]:
         print('Received home_x_y cmd')
-        return ctrl_cmd[12]
+        return command, arg
 
     # Change speed
     elif data[0:5] == 'speed':
@@ -129,23 +132,53 @@ def getCommand(data):
 
 
 
+
+
+
+
+
 class MotorStateMachine:
     def __init__(self):
         self.state = 'HALT'
 
-    def set_state(self, new_state):
+    def set_state(self, new_state, arg=None):
         self.state = new_state
+        self.parameter = arg
+        self.timer = 0
 
     def run(self):
-        if self.state == 'FORWARD':
-            motor.forward()
-        elif self.state == 'BACKWARD':
-            motor.backward()
-        elif self.state == 'LEFT':
-            motor.left()
-        elif self.state == 'RIGHT':
-            motor.right()
-        elif self.state == 'HALT':
+        if self.state == 'forward':
+            if self.parameter:
+                duration = int(self.parameter)
+                self.timer += duration
+                motor.forward()
+                sleep(duration)
+                motor.stop()
+            else:
+                motor.forward()
+        elif self.state == 'backward':
+            if self.parameter:
+                duration = int(self.parameter)
+                motor.backward()
+                sleep(duration)
+                motor.stop()
+        elif self.state == 'left':
+            if self.parameter:
+                duration = int(self.parameter)
+                motor.left()
+                sleep(duration)
+                motor.stop()
+            else:
+                motor.left()
+        elif self.state == 'right':
+            if self.parameter:
+                duration = int(self.parameter)
+                motor.right()
+                sleep(duration)
+                motor.stop()
+            else:
+                motor.right()
+        elif self.state == 'halt':
             motor.stop()
 
 
@@ -159,13 +192,25 @@ class MountStateMachine:
 
     def run(self):
         if self.state == ctrl_cmd[8]:
-            pantilt.move_increase_x()
+            if self.parameter:
+                pantilt.move_increase_x(self.parameter)
+            else:
+                pantilt.move_increase_x(self.parameter)
         elif self.state == ctrl_cmd[9]:
-            pantilt.move_decrease_x()
+            if self.parameter:
+                pantilt.move_decrease_x(self.parameter)
+            else:
+                pantilt.move_decrease_x(self.parameter)
         elif self.state == ctrl_cmd[10]:
-            pantilt.move_increase_y()
+            if self.parameter:
+                pantilt.move_increase_y(self.parameter)
+            else:
+                pantilt.move_increase_y(self.parameter)
         elif self.state == ctrl_cmd[11]:
-            pantilt.move_decrease_y()
+            if self.parameter:
+                pantilt.move_decrease_y(self.parameter)
+            else:
+                pantilt.move_decrease_y(self.parameter)
         elif self.state == ctrl_cmd[12]:
             pantilt.home_x_y()
 
@@ -194,17 +239,18 @@ if __name__=='__main__':
         while True:
             data = ''
             data = tcpCliSock.recv(BUFSIZ).decode()    # Receive and decode data sent from the client.
-            # Analyze the command received and control the car accordingly.
             if not data:
                 break
 
-            state = getCommand(data)
+            # Analyze the command received and control the car accordingly.
+            command, arg = getCommand(data)
 
-            motor_sm.set_state(state)
+            motor_sm.set_state(command, arg)
             motor_sm.run()
 
             #mount_sm.set_state(state)
             #mount_sm.run()
+
 
 
 tcpSerSock.close()
