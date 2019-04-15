@@ -33,6 +33,9 @@ class Shell(cmd.Cmd):
         'Stop vehicle'
         client_backend.stop_fun()
 
+    def do_bearing(self, arg):
+        'Turn to bearing'
+        client_backend.bearing_fun(*parse(arg))
 
     ####################
     # CAMERA

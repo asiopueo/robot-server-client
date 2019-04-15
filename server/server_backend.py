@@ -67,6 +67,9 @@ def getCommand(data):
     elif command == ctrl_cmd[4]:
         print('Received stop cmd')
         return command, 0   # Returns 0 to set the timer of the motor state machine to zero seconds
+    elif command == 'bearing': # Need to rework everything later...
+        print('Received bearing cmd')
+        return command, arg
 
 
     # CPU readouts
@@ -148,33 +151,64 @@ class MotorStateMachine:
         self.state = 'stop'
         self.last_time = time()
         self.timer = 0.
+        self.bearing = 0.
+        # Sensory information:
+        self.yaw = 0.
 
     def set_state(self, new_state, arg=0.):
-        self.state = new_state
-        self.timer = float(arg)
+        if new_state == 'bearing':
+            self.state = new_state
+            self.bearing = float(arg)
+        else:
+            self.state = new_state
+            self.timer = float(arg)
+
+    def update(self, angle):
+        self.yaw = angle
+
+    def step(self):
+        current_time = time()
+        self.timer -= current_time - self.last_time
+        self.last_time = current_time
+
+        print(self.timer)
 
         if self.state == 'forward':
-            motor.forward()
+            if self.timer <= 0:
+                motor.stop()
+            else:
+                motor.forward()
         elif self.state == 'backward':
-            motor.backward()
+            if self.timer <= 0:
+                motor.stop()
+            else:
+                motor.backward()
         elif self.state == 'left':
-            motor.left()
+            if self.timer <= 0:
+                motor.stop()
+            else:
+                motor.left()
         elif self.state == 'right':
-            motor.right()
+            if self.timer <= 0:
+                motor.stop()
+            else:
+                motor.right()
+        # Tentative:
+        elif self.state == 'bearing':
+            print(self.yaw, " vs. ", self.bearing)
+            if self.yaw <= self.bearing:
+                motor.right()
+            elif self.yaw >= self.bearing:
+                motor.left()
         elif self.state == 'stop':
             self.timer = 0.
             motor.stop()
 
 
-    def step(self):
-        print(self.timer)
 
-        if self.timer <= 0:
-            motor.stop()
-        else:
-            current_time = time()
-            self.timer -= current_time - self.last_time
-            self.last_time = current_time
+
+
+
 
 
 
@@ -226,8 +260,8 @@ if __name__=='__main__':
     motor_sm = MotorStateMachine()
     mount_sm = MountStateMachine()
 
-    imu = IMU()
-    imu.start()
+    #imu = IMU()
+    #imu.start()
 
     while True:
         print('Waiting for connection...')
@@ -255,10 +289,12 @@ if __name__=='__main__':
                 pass
 
             # Insert passive IMU-readout here:
-            print("Yaw=", imu.getYaw())
-            print("Is alive: ", imu.is_alive())
+            #print("Yaw=", imu.getYaw())
+            #print("Is alive: ", imu.is_alive())
 
-            motor_sm.step()
+            #motor_sm.update(yaw)   # Update sensor input
+            motor_sm.step()         # Execute step
+
 
 
 

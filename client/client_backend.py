@@ -23,7 +23,7 @@ except:
 #	Vehicle commands
 ######################
 DEFAULT_TIME=3 # 3000 seconds
-DEFAULT_ANGLE=20 # 20 degrees
+
 
 #def forward_fun(event):
 def forward_fun(arg=DEFAULT_TIME):
@@ -50,10 +50,17 @@ def stop_fun():
 	print('stop')
 	tcpCliSock.send(b'stop')
 
+def bearing_fun(arg=0.):
+	data = "bearing={}".format(arg)
+	print(data)
+	tcpCliSock.send(data.encode())
+
 
 #####################
 #	Camera commands
 #####################
+DEFAULT_ANGLE=20 # 20 degrees
+
 def x_increase(arg=DEFAULT_ANGLE):
 	data = "x+={}".format(arg)
 	print(data)
