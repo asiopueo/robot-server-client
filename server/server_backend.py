@@ -9,6 +9,9 @@ import fake_rpi.RPi
 sys.modules['RPi'] = fake_rpi.RPi     # Mock RPi (GPIO)
 sys.modules['smbus'] = fake_rpi.smbus # Mock smbus (I2C)
 
+
+fake_rpi.toggle_print(False)
+
 #import RPi.GPIO as GPIO
 #from fake_rpi.RPi import GPIO
 
@@ -16,6 +19,8 @@ import pantilt
 import car_dir
 import motor
 
+import threading
+import serial
 
 ctrl_cmd = ['forward', 'backward', 'left', 'right', 'stop', 'read cpu_temp', 'home', 'distance', 'x+', 'x-', 'y+', 'y-', 'xy_home']
 
@@ -147,7 +152,6 @@ class MotorStateMachine:
     def set_state(self, new_state, arg=0.):
         self.state = new_state
         self.timer = float(arg)
-        #self.parameter = arg
 
         if self.state == 'forward':
             motor.forward()
@@ -164,47 +168,55 @@ class MotorStateMachine:
 
     def step(self):
         print(self.timer)
-        current_time = time()
-        self.timer -= current_time - self.last_time
-        self.last_time = current_time
 
         if self.timer <= 0:
             motor.stop()
+        else:
+            current_time = time()
+            self.timer -= current_time - self.last_time
+            self.last_time = current_time
 
 
 
-
-# Deprecated
+# Needs a thorough rewrite
 class MountStateMachine:
     def __init__(self):
         self.state = 'home_x_y'
+        self.parameter = 0.
 
     def set_state(self, new_state):
         self.state = new_state
 
     def step(self):
         if self.state == ctrl_cmd[8]:
-            if self.parameter:
-                pantilt.move_increase_x(self.parameter)
-            else:
-                pantilt.move_increase_x(self.parameter)
+            pantilt.move_increase_x(self.parameter)
         elif self.state == ctrl_cmd[9]:
-            if self.parameter:
-                pantilt.move_decrease_x(self.parameter)
-            else:
-                pantilt.move_decrease_x(self.parameter)
+            pantilt.move_decrease_x(self.parameter)
         elif self.state == ctrl_cmd[10]:
-            if self.parameter:
-                pantilt.move_increase_y(self.parameter)
-            else:
-                pantilt.move_increase_y(self.parameter)
+            pantilt.move_increase_y(self.parameter)
         elif self.state == ctrl_cmd[11]:
-            if self.parameter:
-                pantilt.move_decrease_y(self.parameter)
-            else:
-                pantilt.move_decrease_y(self.parameter)
+            pantilt.move_decrease_y(self.parameter)
         elif self.state == ctrl_cmd[12]:
             pantilt.home_x_y()
+
+
+class IMU(threading.Thread):
+    def __init__(self, interface='/dev/ttyACM0'):
+        super().__init__()
+        self.imu_socket = serial.Serial(interface, 14400)
+        self.last_reading = 0.0
+
+    def run(self):
+        while True:
+            try:
+                str = self.imu_socket.readline().decode()
+                yaw = str.split('=')[1].split(',')[0]
+                self.last_reading = float(yaw)
+            except UnicodeDecodeError:
+                pass
+
+    def getYaw(self):
+        return self.last_reading
 
 
 
@@ -213,6 +225,9 @@ if __name__=='__main__':
     # Initializing state machines:
     motor_sm = MotorStateMachine()
     mount_sm = MountStateMachine()
+
+    imu = IMU()
+    imu.start()
 
     while True:
         print('Waiting for connection...')
@@ -236,12 +251,15 @@ if __name__=='__main__':
                 command, arg = getCommand(data)
                 motor_sm.set_state(command, arg)
             except:
-                motor_sm.step()
+                #motor_sm.step()
+                pass
 
+            # Insert passive IMU-readout here:
+            print("Yaw=", imu.getYaw())
+            print("Is alive: ", imu.is_alive())
 
+            motor_sm.step()
 
-            #motor_sm.set_state(command, arg)
-            #mount_sm.set_state(state)
 
 
 
