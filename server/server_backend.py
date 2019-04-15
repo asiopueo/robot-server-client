@@ -18,6 +18,8 @@ fake_rpi.toggle_print(False)
 import pantilt
 import car_dir
 import motor
+import pid
+
 
 import threading
 import serial
@@ -155,6 +157,9 @@ class MotorStateMachine:
         # Sensory information:
         self.yaw = 0.
 
+        self.pid = pid.PID()
+
+
     def set_state(self, new_state, arg=0.):
         if new_state == 'bearing':
             self.state = new_state
@@ -196,16 +201,17 @@ class MotorStateMachine:
         # Tentative:
         elif self.state == 'bearing':
             print(self.yaw, " vs. ", self.bearing)
-            if self.yaw <= self.bearing:
-                motor.right()
-            elif self.yaw >= self.bearing:
-                motor.left()
+            val = self.pid.compute(self.yaw-self.bearing)
+            print("Value: {}".format(val))
+
+            if val <= 0:
+                motor.right(val)
+            elif val >= 0:
+                motor.left(val)
+
         elif self.state == 'stop':
             self.timer = 0.
             motor.stop()
-
-
-
 
 
 
@@ -251,6 +257,7 @@ class IMU(threading.Thread):
 
     def getYaw(self):
         return self.last_reading
+
 
 
 

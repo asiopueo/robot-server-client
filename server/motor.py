@@ -83,35 +83,26 @@ def motor1(x):
 	elif x == 'False':
 		GPIO.output(Motor1, GPIO.HIGH)
 
-def forward():
-	setSpeed(25)
+def forward(speed = 25):
+	setSpeed(speed)
 	motor0(forward0)
 	motor1(forward1)
 
-def backward():
-	setSpeed(25)
+def backward(speed = 25):
+	setSpeed(speed)
 	motor0(backward0)
 	motor1(backward1)
 
-def left():
-	setSpeed(65)
+def left(speed = 65):
+	setSpeed(speed)
 	motor0(backward0)
 	motor1(forward1)
 
-def right():
-	setSpeed(65)
+def right(speed = 65):
+	setSpeed(speed)
 	motor0(forward0)
 	motor1(backward1)
 
-def forwardWithSpeed(spd = 50):
-	setSpeed(spd)
-	motor0(forward0)
-	motor1(forward1)
-
-def backwardWithSpeed(spd = 50):
-	setSpeed(spd)
-	motor0(backward0)
-	motor1(backward1)
 
 def stop():
 	setSpeed(0)
